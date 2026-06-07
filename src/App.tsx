@@ -8,6 +8,7 @@ import TrendingSection from "./components/TrendingSection";
 import Features from "./components/Features";
 import Footer from "./components/Footer";
 import CartDrawer from "./components/CartDrawer";
+import CheckoutDrawer from "./components/CheckoutDrawer";
 import LoginPage from "./components/admin/LoginPage";
 import AdminDashboard from "./components/admin/AdminDashboard";
 import type { Product } from "./data/products";
@@ -21,6 +22,7 @@ type Page = "home" | "admin-login" | "admin-dashboard";
 function AppContent() {
   const [cart, setCart] = useState<CartItem[]>([]);
   const [cartOpen, setCartOpen] = useState(false);
+  const [checkoutOpen, setCheckoutOpen] = useState(false);
   const [toast, setToast] = useState<string | null>(null);
   const [page, setPage] = useState<Page>("home");
   const { isLoggedIn } = useAuth();
@@ -55,6 +57,23 @@ function AppContent() {
     } else {
       setPage("admin-login");
     }
+  };
+
+  const handleCheckout = () => {
+    if (cart.length === 0) {
+      setToast("Add at least one item before checkout.");
+      setTimeout(() => setToast(null), 2200);
+      return;
+    }
+    setCartOpen(false);
+    setCheckoutOpen(true);
+  };
+
+  const handleOrderSuccess = (orderId: string, paymentMethod: string) => {
+    setCart([]);
+    setCheckoutOpen(false);
+    setToast(`Order placed! ${paymentMethod} selected. ID: ${orderId}`);
+    setTimeout(() => setToast(null), 3200);
   };
 
   if (page === "admin-login") {
@@ -110,6 +129,14 @@ function AppContent() {
         items={cart}
         onRemove={removeFromCart}
         onQty={updateQty}
+        onCheckout={handleCheckout}
+      />
+
+      <CheckoutDrawer
+        open={checkoutOpen}
+        onClose={() => setCheckoutOpen(false)}
+        items={cart}
+        onSuccess={handleOrderSuccess}
       />
 
       {/* Toast */}

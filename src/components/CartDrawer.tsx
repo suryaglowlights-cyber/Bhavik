@@ -10,9 +10,10 @@ interface Props {
   items: CartItem[];
   onRemove: (id: string) => void;
   onQty: (id: string, delta: number) => void;
+  onCheckout: () => void;
 }
 
-export default function CartDrawer({ open, onClose, items, onRemove, onQty }: Props) {
+export default function CartDrawer({ open, onClose, items, onRemove, onQty, onCheckout }: Props) {
   const total = items.reduce((s, i) => s + i.price * i.qty, 0);
 
   return (
@@ -100,6 +101,7 @@ export default function CartDrawer({ open, onClose, items, onRemove, onQty }: Pr
             </span>
           </div>
           <button
+            onClick={onCheckout}
             disabled={items.length === 0}
             className="w-full py-3 rounded-xl bg-gradient-to-r from-violet-500 to-fuchsia-500 text-white font-bold shadow-lg shadow-fuchsia-500/40 disabled:opacity-40 disabled:cursor-not-allowed hover:shadow-fuchsia-500/60 transition-all"
           >
