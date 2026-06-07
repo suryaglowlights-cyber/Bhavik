@@ -37,13 +37,21 @@ export default function Hero() {
       </div>
 
       <div className="relative z-10 max-w-6xl mx-auto px-6 text-center">
-        {/* 🔥 Custom 3D Logo Component directly used as Hero Element */}
-        <div className="mb-10">
-          <span className="block text-xl md:text-3xl font-bold text-white/50 mb-8 uppercase tracking-[0.2em]">
+        <div className="mb-12">
+          <span className="block text-sm md:text-base uppercase tracking-[0.65em] text-orange-300/80 mb-6 hero-welcome">
             {content.heroTitle1}
           </span>
-          
-          <Logo3D size="hero" layout="vertical" showText={true} />
+
+          <div className="relative inline-flex items-center justify-center mx-auto">
+            <div className="absolute inset-0 -z-10 rounded-[2.5rem] blur-3xl opacity-30 bg-gradient-to-r from-orange-500 via-fuchsia-500 to-cyan-500" />
+            <h1 className="relative text-6xl md:text-[5.5rem] lg:text-[7.5rem] font-black leading-[0.9] tracking-[-0.05em] text-transparent bg-clip-text bg-gradient-to-r from-orange-400 via-fuchsia-400 to-cyan-400 hero-title">
+              {content.heroTitle2}
+            </h1>
+          </div>
+
+          <p className="mt-8 text-base md:text-lg text-white/70 max-w-2xl mx-auto leading-relaxed hero-subtitle">
+            {content.heroSubtitle}
+          </p>
         </div>
 
         <div className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-white/5 border border-white/10 backdrop-blur-md mb-6">
@@ -52,10 +60,6 @@ export default function Hero() {
             Live · Auto-Trending Products · Updated Every Hour
           </span>
         </div>
-
-        <p className="text-lg md:text-xl text-white/70 max-w-2xl mx-auto mb-10 leading-relaxed">
-          {content.heroSubtitle}
-        </p>
 
         <div className="flex flex-col sm:flex-row gap-4 justify-center items-center">
           <a
