@@ -17,7 +17,7 @@ export default function Features() {
       <div className="max-w-5xl mx-auto">
         <div className="text-center mb-8">
           <div className="inline-block px-3 py-1 rounded-full bg-cyan-500/10 border border-cyan-400/30 text-cyan-300 text-[10px] font-semibold mb-3 uppercase tracking-wider">
-            Why BhaviX
+            Why Bhavik
           </div>
           <h2 className="text-3xl md:text-4xl font-black text-white mb-2">
             {content.featuresTitle}

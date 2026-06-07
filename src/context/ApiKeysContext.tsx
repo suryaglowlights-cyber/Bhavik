@@ -1,4 +1,4 @@
-import { createContext, useContext, useState, useEffect, type ReactNode } from "react";
+import { createContext, useContext, useState, type ReactNode } from "react";
 
 export interface ProviderKeys {
   apiKey: string;
@@ -39,14 +39,7 @@ export function useApiKeys() {
 }
 
 export function ApiKeysProvider({ children }: { children: ReactNode }) {
-  const [keys, setKeys] = useState<AllApiKeys>(() => {
-    const saved = localStorage.getItem("bhavix_api_keys");
-    return saved ? JSON.parse(saved) : defaultKeys;
-  });
-
-  useEffect(() => {
-    localStorage.setItem("bhavix_api_keys", JSON.stringify(keys));
-  }, [keys]);
+  const [keys, setKeys] = useState<AllApiKeys>(defaultKeys);
 
   const saveKeys = (provider: keyof AllApiKeys, data: ProviderKeys) => {
     setKeys((prev) => ({ ...prev, [provider]: { ...data, isActive: true } }));

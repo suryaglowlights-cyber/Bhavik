@@ -1,6 +1,7 @@
 import { useEffect, useMemo, useState } from "react";
 import { useContent } from "../context/ContentContext";
-import { products as demoProducts, categories, type Product } from "../data/products";
+import { categories, type Product } from "../data/products";
+import { getAllTrendingProducts } from "../lib/api";
 import ProductCard from "./ProductCard";
 
 interface Props {
@@ -10,25 +11,35 @@ interface Props {
 export default function TrendingSection({ onAdd }: Props) {
   const { content } = useContent();
   const [activeCat, setActiveCat] = useState("all");
-  const [items, setItems] = useState<Product[]>(demoProducts);
+  const [items, setItems] = useState<Product[]>([]);
   const [loading, setLoading] = useState(true);
+  const [error, setError] = useState<string | null>(null);
 
   useEffect(() => {
-    const timer = setTimeout(() => {
-      const sorted = [...demoProducts].sort(
-        (a, b) => b.rating * b.reviews - a.rating * a.reviews
-      );
-      setItems(sorted);
-      setLoading(false);
-    }, 600);
-    return () => clearTimeout(timer);
-  }, []);
+    let active = true;
 
-  useEffect(() => {
-    const interval = setInterval(() => {
-      setItems((prev) => [...prev].sort(() => Math.random() - 0.5));
-    }, 300000);
-    return () => clearInterval(interval);
+    void (async () => {
+      try {
+        const products = await getAllTrendingProducts();
+        if (active) {
+          setItems(products);
+        }
+      } catch (err) {
+        if (active) {
+          setError(
+            "Unable to load live products. Configure API keys in the admin dashboard to fetch real provider data."
+          );
+        }
+      } finally {
+        if (active) {
+          setLoading(false);
+        }
+      }
+    })();
+
+    return () => {
+      active = false;
+    };
   }, []);
 
   const filtered = useMemo(() => {

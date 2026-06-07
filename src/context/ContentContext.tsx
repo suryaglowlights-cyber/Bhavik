@@ -1,4 +1,4 @@
-import { createContext, useContext, useState, useEffect, type ReactNode } from "react";
+import { createContext, useContext, useState, type ReactNode } from "react";
 
 export interface SiteContent {
   // Brand
@@ -73,14 +73,7 @@ export function useContent() {
 }
 
 export function ContentProvider({ children }: { children: ReactNode }) {
-  const [content, setContent] = useState<SiteContent>(() => {
-    const saved = localStorage.getItem("bhavix_content");
-    return saved ? JSON.parse(saved) : defaultContent;
-  });
-
-  useEffect(() => {
-    localStorage.setItem("bhavix_content", JSON.stringify(content));
-  }, [content]);
+  const [content, setContent] = useState<SiteContent>(defaultContent);
 
   const updateContent = (key: keyof SiteContent, value: string) => {
     setContent((prev) => ({ ...prev, [key]: value }));

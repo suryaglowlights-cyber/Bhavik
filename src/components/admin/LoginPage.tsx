@@ -24,7 +24,7 @@ export default function LoginPage({ onLogin }: Props) {
       if (success) {
         onLogin();
       } else {
-        setError("Invalid email or password. Try admin@bhavix.com / admin123");
+        setError("Invalid email or password. Try admin@bhavik.com / admin123");
       }
     }, 800);
   };
@@ -49,12 +49,12 @@ export default function LoginPage({ onLogin }: Props) {
         {/* Logo */}
         <div className="text-center mb-8">
           <div className="inline-flex items-center justify-center w-20 h-20 rounded-2xl bg-gradient-to-br from-fuchsia-600 via-violet-600 to-cyan-500 shadow-[0_0_60px_rgba(217,70,239,0.5)] mb-4 [perspective:400px]">
-            <span className="text-white font-black text-4xl tracking-tighter [transform:rotateY(10deg)]">
-              B<span className="text-cyan-200">X</span>
+            <span className="text-white font-black text-4xl tracking-tighter">
+              B
             </span>
           </div>
           <h1 className="text-3xl font-black text-white">
-            BhaviX <span className="text-violet-400">Admin</span>
+            Bhavik <span className="text-violet-400">Admin</span>
           </h1>
           <p className="text-white/50 text-sm mt-1">Manage your store & API keys</p>
         </div>
@@ -87,7 +87,7 @@ export default function LoginPage({ onLogin }: Props) {
                   type="email"
                   value={email}
                   onChange={(e) => setEmail(e.target.value)}
-                  placeholder="admin@bhavix.com"
+                  placeholder="admin@bhavik.com"
                   required
                   className="w-full pl-12 pr-4 py-3.5 rounded-xl bg-white/5 border border-white/10 text-white placeholder:text-white/30 focus:outline-none focus:border-violet-500/50 focus:ring-2 focus:ring-violet-500/20 transition-all"
                 />
@@ -141,7 +141,7 @@ export default function LoginPage({ onLogin }: Props) {
 
           <div className="mt-4 p-3 rounded-xl bg-violet-500/5 border border-violet-500/20">
             <p className="text-xs text-white/50 text-center">
-              Demo: <span className="text-violet-300">admin@bhavix.com</span> / <span className="text-violet-300">admin123</span>
+              Demo: <span className="text-violet-300">admin@bhavik.com</span> / <span className="text-violet-300">admin123</span>
             </p>
           </div>
         </form>
