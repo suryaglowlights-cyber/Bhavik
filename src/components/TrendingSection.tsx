@@ -39,18 +39,18 @@ export default function TrendingSection({ onAdd }: Props) {
   }, [items, activeCat]);
 
   return (
-    <section id="trending" className="py-20 px-4 md:px-6 relative">
+    <section id="trending" className="py-16 px-4 md:px-6 relative">
       <div className="max-w-7xl mx-auto">
-        <div className="flex flex-col md:flex-row md:items-end justify-between gap-6 mb-10">
+        <div className="flex flex-col md:flex-row md:items-end justify-between gap-6 mb-8">
           <div>
-            <div className="inline-flex items-center gap-2 px-3 py-1.5 rounded-full bg-fuchsia-500/10 border border-fuchsia-400/30 text-fuchsia-300 text-xs font-semibold mb-3 uppercase tracking-wider">
+            <div className="inline-flex items-center gap-2 px-3 py-1.5 rounded-full bg-fuchsia-500/10 border border-fuchsia-400/30 text-fuchsia-300 text-[11px] font-semibold mb-3 uppercase tracking-wider">
               <span className="w-1.5 h-1.5 rounded-full bg-fuchsia-400 animate-pulse" />
               Auto-Updated Live
             </div>
-            <h2 id="categories" className="text-4xl md:text-5xl font-black text-white">
+            <h2 id="categories" className="text-3xl md:text-4xl font-black text-white">
               {content.trendingTitle}
             </h2>
-            <p className="text-white/60 mt-2">{content.trendingSubtitle}</p>
+            <p className="text-white/60 mt-2 max-w-2xl">{content.trendingSubtitle}</p>
           </div>
         </div>
 

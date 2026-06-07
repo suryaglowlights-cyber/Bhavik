@@ -5,11 +5,11 @@ export default function Hero() {
   const { content } = useContent();
 
   return (
-    <section className="relative min-h-screen flex items-center justify-center overflow-hidden pt-24 pb-16">
+    <section className="relative min-h-[85vh] flex items-center justify-center overflow-hidden pt-20 pb-12">
       {/* Animated 3D background blobs updated for Orange/Blue theme */}
       <div className="absolute inset-0 -z-10">
-        <div className="absolute top-1/4 left-1/4 w-96 h-96 rounded-full bg-orange-600/20 blur-[120px] animate-pulse" />
-        <div className="absolute bottom-1/4 right-1/4 w-96 h-96 rounded-full bg-blue-600/20 blur-[120px] animate-pulse" style={{animationDelay:'1s'}} />
+        <div className="absolute top-1/4 left-1/4 w-80 h-80 rounded-full bg-orange-600/20 blur-[120px] animate-pulse" />
+        <div className="absolute bottom-20 right-1/4 w-80 h-80 rounded-full bg-blue-600/20 blur-[120px] animate-pulse" style={{ animationDelay: "1s" }} />
         <div className="absolute top-1/2 left-1/2 w-72 h-72 rounded-full bg-orange-500/10 blur-[100px]" />
       </div>
 
@@ -36,20 +36,20 @@ export default function Hero() {
         ))}
       </div>
 
-      <div className="relative z-10 max-w-6xl mx-auto px-6 text-center">
-        <div className="mb-12">
-          <span className="block text-sm md:text-base uppercase tracking-[0.65em] text-orange-300/80 mb-6 hero-welcome">
+      <div className="relative z-10 max-w-5xl mx-auto px-6 text-center">
+        <div className="mb-10">
+          <span className="block text-xs md:text-sm font-semibold uppercase tracking-[0.55em] text-orange-300/90 mb-5 hero-welcome">
             {content.heroTitle1}
           </span>
 
           <div className="relative inline-flex items-center justify-center mx-auto">
-            <div className="absolute inset-0 -z-10 rounded-[2.5rem] blur-3xl opacity-30 bg-gradient-to-r from-orange-500 via-fuchsia-500 to-cyan-500" />
-            <h1 className="relative text-6xl md:text-[5.5rem] lg:text-[7.5rem] font-black leading-[0.9] tracking-[-0.05em] text-transparent bg-clip-text bg-gradient-to-r from-orange-400 via-fuchsia-400 to-cyan-400 hero-title">
+            <div className="absolute inset-x-0 top-1/2 h-24 bg-gradient-to-r from-orange-500/15 via-fuchsia-500/10 to-cyan-500/15 blur-3xl" />
+            <h1 className="relative text-6xl md:text-[5.8rem] lg:text-[7rem] font-black leading-[0.95] tracking-[-0.05em] text-transparent bg-clip-text bg-gradient-to-r from-orange-400 via-fuchsia-400 to-cyan-400 hero-title">
               {content.heroTitle2}
             </h1>
           </div>
 
-          <p className="mt-8 text-base md:text-lg text-white/70 max-w-2xl mx-auto leading-relaxed hero-subtitle">
+          <p className="mt-6 text-base md:text-lg text-white/70 max-w-2xl mx-auto leading-relaxed hero-subtitle">
             {content.heroSubtitle}
           </p>
         </div>
