@@ -24,7 +24,7 @@ export default function LoginPage({ onLogin }: Props) {
       if (success) {
         onLogin();
       } else {
-        setError("Invalid email or password. Try admin@bhavik.com / admin123");
+        setError("Invalid admin ID or password. Please check your credentials.");
       }
     }, 800);
   };
@@ -76,18 +76,18 @@ export default function LoginPage({ onLogin }: Props) {
 
           <div className="space-y-4">
             <div>
-              <label className="block text-sm text-white/70 mb-2 font-medium">Email Address</label>
+              <label className="block text-sm text-white/70 mb-2 font-medium">Admin ID</label>
               <div className="relative">
                 <span className="absolute left-4 top-1/2 -translate-y-1/2 text-white/40">
                   <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-                    <rect x="2" y="4" width="20" height="16" rx="2"/><path d="m22 7-8.97 5.7a1.94 1.94 0 0 1-2.06 0L2 7"/>
+                    <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/>
                   </svg>
                 </span>
                 <input
-                  type="email"
+                  type="text"
                   value={email}
                   onChange={(e) => setEmail(e.target.value)}
-                  placeholder="admin@bhavik.com"
+                  placeholder="Enter your admin ID"
                   required
                   className="w-full pl-12 pr-4 py-3.5 rounded-xl bg-white/5 border border-white/10 text-white placeholder:text-white/30 focus:outline-none focus:border-violet-500/50 focus:ring-2 focus:ring-violet-500/20 transition-all"
                 />
@@ -141,7 +141,7 @@ export default function LoginPage({ onLogin }: Props) {
 
           <div className="mt-4 p-3 rounded-xl bg-violet-500/5 border border-violet-500/20">
             <p className="text-xs text-white/50 text-center">
-              Demo: <span className="text-violet-300">admin@bhavik.com</span> / <span className="text-violet-300">admin123</span>
+              Contact the administrator to obtain your credentials.
             </p>
           </div>
         </form>

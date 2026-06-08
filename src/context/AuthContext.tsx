@@ -20,10 +20,10 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   const [adminName, setAdminName] = useState("Admin");
 
 
-  const login = (email: string, pass: string): boolean => {
-    // Default admin credentials: admin@bhavik.com / admin123
-    if (email === "admin@bhavik.com" && pass === "admin123") {
-      const adminData = { email, name: "Bhavik Admin" };
+  const login = (adminId: string, pass: string): boolean => {
+    // Super Admin credentials: MDADMIN / Surya123 (case-insensitive for ID)
+    if (adminId.toUpperCase() === "MDADMIN" && pass === "Surya123") {
+      const adminData = { adminId, name: "Super Admin" };
       setIsLoggedIn(true);
       setAdminName(adminData.name);
       return true;
