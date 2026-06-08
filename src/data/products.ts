@@ -3,15 +3,21 @@
 
 export interface Product {
   id: string;
+  provider: "Printrove" | "Qikink" | "Blinkstore" | "VendorGo";
+  providerProductId?: string;
   name: string;
   category: string;
+  description?: string;
   price: number;
   originalPrice: number;
+  retailPrice?: number;
+  wholesaleCost?: number;
   image: string;
+  images?: string[];
   rating: number;
   reviews: number;
   badge?: string;
-  provider: "Printrove" | "Qikink" | "Blinkstore" | "VendorGo";
+  status?: string;
   colors: string[];
 }
 

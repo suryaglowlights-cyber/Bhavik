@@ -3,6 +3,7 @@ import { useAuth } from "../../context/AuthContext";
 import { useApiKeys } from "../../context/ApiKeysContext";
 import ApiKeysPanel from "./ApiKeysPanel";
 import ContentEditor from "./ContentEditor";
+import CatalogSyncPanel from "./CatalogSyncPanel";
 
 interface Props {
   onBack: () => void;
@@ -11,7 +12,7 @@ interface Props {
 export default function AdminDashboard({ onBack }: Props) {
   const { adminName, logout } = useAuth();
   const { getActiveCount } = useApiKeys();
-  const [activeSection, setActiveSection] = useState<"apikeys" | "content" | "orders" | "settings">("apikeys");
+  const [activeSection, setActiveSection] = useState<"apikeys" | "content" | "orders" | "settings" | "catalog">("apikeys");
 
   const handleLogout = () => {
     logout();
@@ -89,6 +90,7 @@ export default function AdminDashboard({ onBack }: Props) {
         <div className="flex gap-2 mb-6 overflow-x-auto pb-2">
           {[
             { id: "apikeys" as const, label: "🔑 API Keys", desc: "Provider configurations" },
+            { id: "catalog" as const, label: "🛒 Catalog Sync", desc: "Sync vendor products" },
             { id: "content" as const, label: "📝 Content Editor", desc: "Edit website content" },
             { id: "orders" as const, label: "📦 Orders", desc: "Coming soon" },
             { id: "settings" as const, label: "⚙️ Settings", desc: "Store settings" },
@@ -109,6 +111,8 @@ export default function AdminDashboard({ onBack }: Props) {
 
         {/* Content */}
         {activeSection === "apikeys" && <ApiKeysPanel />}
+
+        {activeSection === "catalog" && <CatalogSyncPanel />}
 
         {activeSection === "content" && <ContentEditor />}
 
