@@ -101,7 +101,7 @@ export default function ApiKeysPanel() {
       <div className="grid grid-cols-2 md:grid-cols-4 gap-3">
         {Object.entries(providerConfig).map(([key, cfg]) => {
           const data = keys[key as ProviderKey];
-          const isConfigured = data.apiKey.length > 0 || data.clientId.length > 0 || data.accessToken.length > 0;
+          const hasKeys = data.apiKey.length > 0 || data.clientId.length > 0 || data.accessToken.length > 0;
           return (
             <div
               key={key}
@@ -116,9 +116,9 @@ export default function ApiKeysPanel() {
                 <span className="text-2xl">{cfg.icon}</span>
                 <span
                   className={`w-2.5 h-2.5 rounded-full ${
-                    data.isActive && isConfigured
+                    data.isActive && hasKeys
                       ? "bg-emerald-400 shadow-lg shadow-emerald-400/50"
-                      : isConfigured
+                      : hasKeys
                       ? "bg-amber-400"
                       : "bg-red-400/60"
                   }`}
@@ -126,7 +126,7 @@ export default function ApiKeysPanel() {
               </div>
               <p className="text-white font-bold text-sm">{cfg.name}</p>
               <p className="text-[10px] text-white/50 mt-0.5">
-                {data.isActive && isConfigured ? "✅ Active" : isConfigured ? "⏸️ Inactive" : "❌ Not Set"}
+                {data.isActive && hasKeys ? "✅ Active" : hasKeys ? "⏸️ Inactive" : "❌ Not Set"}
               </p>
             </div>
           );
@@ -251,14 +251,18 @@ export default function ApiKeysPanel() {
             <button
               type="button"
               onClick={() => {
-                setFormData({
+                const emptyData = {
                   apiKey: "",
                   secretKey: "",
                   clientId: "",
                   accessToken: "",
                   webhookUrl: "",
                   isActive: false,
-                });
+                };
+                setFormData(emptyData);
+                saveKeys(activeTab, emptyData);
+                setSaved(true);
+                setTimeout(() => setSaved(false), 2500);
               }}
               className="px-6 py-3 rounded-xl bg-white/5 border border-white/10 text-white/60 font-semibold hover:bg-white/10 hover:text-white transition-all"
             >

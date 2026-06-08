@@ -1,4 +1,4 @@
-import { createContext, useContext, useState, type ReactNode } from "react";
+import { createContext, useContext, useState, useEffect, type ReactNode } from "react";
 
 export interface ProviderKeys {
   apiKey: string;
@@ -39,10 +39,21 @@ export function useApiKeys() {
 }
 
 export function ApiKeysProvider({ children }: { children: ReactNode }) {
-  const [keys, setKeys] = useState<AllApiKeys>(defaultKeys);
+  const [keys, setKeys] = useState<AllApiKeys>(() => {
+    const saved = localStorage.getItem("bhavik_api_keys");
+    return saved ? JSON.parse(saved) : defaultKeys;
+  });
+
+  useEffect(() => {
+    localStorage.setItem("bhavik_api_keys", JSON.stringify(keys));
+  }, [keys]);
 
   const saveKeys = (provider: keyof AllApiKeys, data: ProviderKeys) => {
-    setKeys((prev) => ({ ...prev, [provider]: { ...data, isActive: true } }));
+    const hasRequiredKeys = data.apiKey.length > 0 || data.clientId.length > 0 || data.accessToken.length > 0;
+    setKeys((prev) => ({
+      ...prev,
+      [provider]: { ...data, isActive: hasRequiredKeys },
+    }));
   };
 
   const toggleProvider = (provider: keyof AllApiKeys) => {
@@ -53,7 +64,7 @@ export function ApiKeysProvider({ children }: { children: ReactNode }) {
   };
 
   const getActiveCount = () =>
-    Object.values(keys).filter((p) => p.isActive && p.apiKey.length > 0).length;
+    Object.values(keys).filter((p) => p.isActive && (p.apiKey.length > 0 || p.clientId.length > 0)).length;
 
   return (
     <ApiKeysContext.Provider value={{ keys, saveKeys, toggleProvider, getActiveCount }}>
