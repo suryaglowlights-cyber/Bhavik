@@ -23,6 +23,20 @@ const defaultKeys: AllApiKeys = {
   vendorgo: { apiKey: "", secretKey: "", clientId: "", accessToken: "", webhookUrl: "", isActive: false },
 };
 
+const providerHasRequiredKeys = (provider: keyof AllApiKeys, data: ProviderKeys) => {
+  switch (provider) {
+    case "printrove":
+      return data.apiKey.trim().length > 0;
+    case "qikink":
+      return data.clientId.trim().length > 0 && data.accessToken.trim().length > 0;
+    case "blinkstore":
+    case "vendorgo":
+      return data.apiKey.trim().length > 0 && data.secretKey.trim().length > 0;
+    default:
+      return false;
+  }
+};
+
 interface ApiKeysContextType {
   keys: AllApiKeys;
   saveKeys: (provider: keyof AllApiKeys, data: ProviderKeys) => void;
@@ -48,8 +62,25 @@ export function ApiKeysProvider({ children }: { children: ReactNode }) {
     localStorage.setItem("bhavik_api_keys", JSON.stringify(keys));
   }, [keys]);
 
+  useEffect(() => {
+    const loadBackendKeys = async () => {
+      try {
+        const res = await fetch("/api/provider-keys");
+        if (!res.ok) return;
+        const json = await res.json();
+        if (json && typeof json === "object") {
+          setKeys((prev) => ({ ...prev, ...json }));
+        }
+      } catch {
+        // Backend not available yet; continue using local storage.
+      }
+    };
+
+    loadBackendKeys();
+  }, []);
+
   const saveKeys = (provider: keyof AllApiKeys, data: ProviderKeys) => {
-    const hasRequiredKeys = data.apiKey.length > 0 || data.clientId.length > 0 || data.accessToken.length > 0;
+    const hasRequiredKeys = providerHasRequiredKeys(provider, data);
     setKeys((prev) => ({
       ...prev,
       [provider]: { ...data, isActive: hasRequiredKeys },
@@ -63,8 +94,7 @@ export function ApiKeysProvider({ children }: { children: ReactNode }) {
     }));
   };
 
-  const getActiveCount = () =>
-    Object.values(keys).filter((p) => p.isActive && (p.apiKey.length > 0 || p.clientId.length > 0)).length;
+  const getActiveCount = () => Object.values(keys).filter((p) => p.isActive).length;
 
   return (
     <ApiKeysContext.Provider value={{ keys, saveKeys, toggleProvider, getActiveCount }}>

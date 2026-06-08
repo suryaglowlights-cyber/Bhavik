@@ -59,6 +59,38 @@ export async function fetchQikinkProducts(): Promise<Product[]> {
   }
 }
 
+export async function fetchBlinkstoreProducts(): Promise<Product[]> {
+  try {
+    const res = await fetch(`${API_CONFIG.blinkstore.baseUrl}/products`, {
+      headers: {
+        "X-API-KEY": API_CONFIG.blinkstore.apiKey,
+        Accept: "application/json",
+      },
+    });
+    if (!res.ok) throw new Error("Blinkstore API failed");
+    return await res.json();
+  } catch (e) {
+    console.warn("Blinkstore fallback to demo data", e);
+    return [];
+  }
+}
+
+export async function fetchVendorGoProducts(): Promise<Product[]> {
+  try {
+    const res = await fetch(`${API_CONFIG.vendorgo.baseUrl}/products`, {
+      headers: {
+        Authorization: `Bearer ${API_CONFIG.vendorgo.apiKey}`,
+        Accept: "application/json",
+      },
+    });
+    if (!res.ok) throw new Error("VendorGo API failed");
+    return await res.json();
+  } catch (e) {
+    console.warn("VendorGo fallback to demo data", e);
+    return [];
+  }
+}
+
 // Place order via provider
 export async function placeOrder(
   provider: Product["provider"],
@@ -78,11 +110,13 @@ export async function placeOrder(
 
 // Aggregator — auto-fetch from ALL providers + sort by trending
 export async function getAllTrendingProducts(): Promise<Product[]> {
-  const [printrove, qikink] = await Promise.all([
+  const [printrove, qikink, blinkstore, vendorgo] = await Promise.all([
     fetchPrintroveProducts(),
     fetchQikinkProducts(),
+    fetchBlinkstoreProducts(),
+    fetchVendorGoProducts(),
   ]);
-  const all = [...printrove, ...qikink];
+  const all = [...printrove, ...qikink, ...blinkstore, ...vendorgo];
   // Sort by trending score (rating × reviews)
   return all.sort((a, b) => b.rating * b.reviews - a.rating * a.reviews);
 }

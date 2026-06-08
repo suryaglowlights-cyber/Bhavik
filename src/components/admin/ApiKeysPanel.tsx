@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { useApiKeys, type ProviderKeys, type AllApiKeys } from "../../context/ApiKeysContext";
 
 const providerConfig = {
@@ -9,8 +9,7 @@ const providerConfig = {
     glow: "shadow-violet-500/40",
     desc: "India's largest POD platform",
     fields: [
-      { key: "apiKey", label: "API Key", placeholder: "Enter Printrove API Key" },
-      { key: "secretKey", label: "Secret Key", placeholder: "Enter Printrove Secret Key" },
+      { key: "apiKey", label: "Bearer Token", placeholder: "Enter Printrove Bearer Token" },
       { key: "webhookUrl", label: "Webhook URL", placeholder: "https://yourdomain.com/webhook/printrove" },
     ],
   },
@@ -63,6 +62,27 @@ export default function ApiKeysPanel() {
   const [testing, setTesting] = useState<string | null>(null);
   const [testResult, setTestResult] = useState<{ provider: string; success: boolean } | null>(null);
 
+  const providerHasRequiredKeys = (provider: ProviderKey, data: ProviderKeys) => {
+    switch (provider) {
+      case "printrove":
+        return data.apiKey.trim().length > 0;
+      case "qikink":
+        return data.clientId.trim().length > 0 && data.accessToken.trim().length > 0;
+      case "blinkstore":
+      case "vendorgo":
+        return data.apiKey.trim().length > 0 && data.secretKey.trim().length > 0;
+      default:
+        return false;
+    }
+  };
+
+  const providerHasAnyKeys = (data: ProviderKeys) =>
+    data.apiKey.trim().length > 0 ||
+    data.secretKey.trim().length > 0 ||
+    data.clientId.trim().length > 0 ||
+    data.accessToken.trim().length > 0 ||
+    data.webhookUrl.trim().length > 0;
+
   const switchTab = (tab: ProviderKey) => {
     setActiveTab(tab);
     setFormData(keys[tab]);
@@ -75,6 +95,12 @@ export default function ApiKeysPanel() {
     setSaved(false);
   };
 
+  useEffect(() => {
+    setFormData(keys[activeTab]);
+    setSaved(false);
+    setTestResult(null);
+  }, [activeTab, keys]);
+
   const handleSave = () => {
     saveKeys(activeTab, formData);
     setSaved(true);
@@ -86,7 +112,7 @@ export default function ApiKeysPanel() {
     setTestResult(null);
     setTimeout(() => {
       const data = keys[provider as ProviderKey];
-      const hasKeys = data.apiKey.length > 0 || data.clientId.length > 0 || data.accessToken.length > 0;
+      const hasKeys = providerHasRequiredKeys(provider as ProviderKey, data);
       setTesting(null);
       setTestResult({ provider, success: hasKeys });
     }, 1500);
@@ -101,7 +127,8 @@ export default function ApiKeysPanel() {
       <div className="grid grid-cols-2 md:grid-cols-4 gap-3">
         {Object.entries(providerConfig).map(([key, cfg]) => {
           const data = keys[key as ProviderKey];
-          const hasKeys = data.apiKey.length > 0 || data.clientId.length > 0 || data.accessToken.length > 0;
+          const hasRequiredKeys = providerHasRequiredKeys(key as ProviderKey, data);
+          const hasAnyKeys = providerHasAnyKeys(data);
           return (
             <div
               key={key}
@@ -116,9 +143,9 @@ export default function ApiKeysPanel() {
                 <span className="text-2xl">{cfg.icon}</span>
                 <span
                   className={`w-2.5 h-2.5 rounded-full ${
-                    data.isActive && hasKeys
+                    data.isActive && hasRequiredKeys
                       ? "bg-emerald-400 shadow-lg shadow-emerald-400/50"
-                      : hasKeys
+                      : hasAnyKeys
                       ? "bg-amber-400"
                       : "bg-red-400/60"
                   }`}
@@ -126,7 +153,11 @@ export default function ApiKeysPanel() {
               </div>
               <p className="text-white font-bold text-sm">{cfg.name}</p>
               <p className="text-[10px] text-white/50 mt-0.5">
-                {data.isActive && hasKeys ? "✅ Active" : hasKeys ? "⏸️ Inactive" : "❌ Not Set"}
+                {data.isActive && hasRequiredKeys
+                  ? "✅ Active"
+                  : hasAnyKeys
+                  ? "⏸️ Configured"
+                  : "❌ Not Set"}
               </p>
             </div>
           );
