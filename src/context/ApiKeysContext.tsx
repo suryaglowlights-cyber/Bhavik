@@ -53,48 +53,54 @@ export function useApiKeys() {
 }
 
 export function ApiKeysProvider({ children }: { children: ReactNode }) {
-  const [keys, setKeys] = useState<AllApiKeys>(() => {
-    const saved = localStorage.getItem("bhavik_api_keys");
-    return saved ? JSON.parse(saved) : defaultKeys;
-  });
-
-  useEffect(() => {
-    localStorage.setItem("bhavik_api_keys", JSON.stringify(keys));
-  }, [keys]);
+  const [keys, setKeys] = useState<AllApiKeys>(defaultKeys);
 
   useEffect(() => {
     const loadBackendKeys = async () => {
       try {
         const res = await fetch("/api/provider-keys");
-        if (!res.ok) return;
-        const json = await res.json();
-        if (json && typeof json === "object") {
-          setKeys((prev) => ({ ...prev, ...json }));
+        if (res.ok) {
+          const json = await res.json();
+          if (json && typeof json === "object") {
+            setKeys(json);
+          }
         }
-      } catch {
-        // Backend not available yet; continue using local storage.
+      } catch (error) {
+        console.error("Failed to load provider keys from backend:", error);
       }
     };
 
     loadBackendKeys();
   }, []);
 
-  const saveKeys = (provider: keyof AllApiKeys, data: ProviderKeys) => {
+  const saveKeys = async (provider: keyof AllApiKeys, data: ProviderKeys) => {
     const hasRequiredKeys = providerHasRequiredKeys(provider, data);
-    setKeys((prev) => ({
-      ...prev,
+    const updatedKeys = {
+      ...keys,
       [provider]: { ...data, isActive: hasRequiredKeys },
-    }));
+    };
+    
+    setKeys(updatedKeys);
+    
+    try {
+      await fetch("/api/provider-keys", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(updatedKeys),
+      });
+    } catch (error) {
+      console.error("Failed to save provider keys to backend:", error);
+    }
   };
 
   const toggleProvider = (provider: keyof AllApiKeys) => {
-    setKeys((prev) => ({
+    setKeys((prev: AllApiKeys) => ({
       ...prev,
       [provider]: { ...prev[provider], isActive: !prev[provider].isActive },
     }));
   };
 
-  const getActiveCount = () => Object.values(keys).filter((p) => p.isActive).length;
+  const getActiveCount = () => Object.values(keys).filter((p: ProviderKeys) => p.isActive).length;
 
   return (
     <ApiKeysContext.Provider value={{ keys, saveKeys, toggleProvider, getActiveCount }}>

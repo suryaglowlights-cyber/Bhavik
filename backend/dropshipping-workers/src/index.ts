@@ -4,6 +4,7 @@ import { validateAuth } from './middleware/auth';
 import { productRoutes } from './routes/products';
 import { orderRoutes } from './routes/orders';
 import { supplierRoutes } from './routes/suppliers';
+import { providerKeysRoutes } from './routes/provider-keys';
 
 // ========================================
 // Cloudflare Workers - Dropshipping API
@@ -38,6 +39,7 @@ router.get('/health', () => {
 router.all('/api/products/*', productRoutes);
 router.all('/api/orders/*', orderRoutes);
 router.all('/api/suppliers/*', validateAuth, supplierRoutes);
+router.all('/api/provider-keys', providerKeysRoutes);
 
 // 404 handler
 router.all('*', () => {

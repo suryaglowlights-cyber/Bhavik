@@ -26,10 +26,7 @@ const DropshippingContext = createContext<DropshippingContextType | undefined>(u
 export function DropshippingProvider({ children }: { children: ReactNode }) {
   const [suppliers, setSuppliers] = useState<SupplierStatus[]>([]);
   const [loadingSuppliers, setLoadingSuppliers] = useState(true);
-  const [defaultMargin, setDefaultMargin] = useState(() => {
-    const saved = localStorage.getItem('dropshipping:default:margin');
-    return saved ? parseFloat(saved) : 30;
-  });
+  const [defaultMargin, setDefaultMargin] = useState(30);
 
   useEffect(() => {
     refreshSuppliers();
@@ -38,10 +35,6 @@ export function DropshippingProvider({ children }: { children: ReactNode }) {
     const interval = setInterval(refreshSuppliers, 30 * 60 * 1000);
     return () => clearInterval(interval);
   }, []);
-
-  useEffect(() => {
-    localStorage.setItem('dropshipping:default:margin', String(defaultMargin));
-  }, [defaultMargin]);
 
   const refreshSuppliers = async () => {
     try {

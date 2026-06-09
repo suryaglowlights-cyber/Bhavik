@@ -55,19 +55,10 @@ export function calculateProfit(cost: number, retailPrice: number): {
 }
 
 /**
- * Get margin configuration from localStorage or use default
- * @returns Stored margin config or default 30% markup
+ * Get default margin configuration
+ * @returns Default 30% markup configuration
  */
 export function getMarginConfig(): MarginConfig {
-  try {
-    const stored = localStorage.getItem('dropshipping:margin:config');
-    if (stored) {
-      return JSON.parse(stored);
-    }
-  } catch (error) {
-    console.warn('Failed to parse margin config from localStorage', error);
-  }
-
   return {
     type: 'percentage',
     value: 30, // Default 30% margin
@@ -76,10 +67,12 @@ export function getMarginConfig(): MarginConfig {
 }
 
 /**
- * Save margin configuration to localStorage
+ * Save margin configuration (not implemented - uses default)
  */
 export function saveMarginConfig(config: MarginConfig): void {
-  localStorage.setItem('dropshipping:margin:config', JSON.stringify(config));
+  // Margin configuration is now managed via backend
+  // This function is kept for compatibility but does nothing
+  console.log('Margin config save called (not implemented)');
 }
 
 /**
