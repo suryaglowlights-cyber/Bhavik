@@ -1,5 +1,6 @@
 name = "bhavik-dropshipping-api"
-type = "javascript"
+main = "src/index.ts"
+compatibility_date = "2026-06-09"
 account_id = "" # REQUIRED: Run `wrangler whoami` to get your account ID
 workers_dev = true
 route = "" # Set this after deploying: your-api-domain.workers.dev
@@ -16,26 +17,22 @@ routes = [{ pattern = "api.yourdomain.com/*", zone_id = "" }] # TODO: Update wit
 [[d1_databases]]
 binding = "DB"
 database_name = "bhavik-dropshipping"
-database_id = "" # REQUIRED: Run `wrangler d1 create bhavik-dropshipping` and paste ID here
+database_id = "f95455f3-fdd5-4721-a287-a56675a8f274" # REQUIRED: Run `wrangler d1 create bhavik-dropshipping` and paste ID here
 
 # KV Namespace for product caching (4-hour TTL)
 [[kv_namespaces]]
 binding = "SUPPLIER_CACHE"
-id = "" # REQUIRED: Run `wrangler kv:namespace create "SUPPLIER_CACHE"` and paste ID here
+id = "d4665aa27968476f80df3fb85b300511" # REQUIRED: Run `wrangler kv:namespace create "SUPPLIER_CACHE"` and paste ID here
 
 # KV Namespace for API keys storage
 [[kv_namespaces]]
 binding = "API_KEYS_KV"
-id = "" # REQUIRED: Run `wrangler kv:namespace create "API_KEYS_KV"` and paste ID here
+id = "6c4488ed875942589dcac121327c8733" # REQUIRED: Run `wrangler kv:namespace create "API_KEYS_KV"` and paste ID here
 
 # Production KV namespaces (create with --preview flag)
 [env.production.kv_namespaces]
 binding = "SUPPLIER_CACHE"
 id = "" # REQUIRED: Run `wrangler kv:namespace create "SUPPLIER_CACHE" --preview` and paste ID here
-
-[env.production.kv_namespaces]
-binding = "API_KEYS_KV"
-id = "" # REQUIRED: Run `wrangler kv:namespace create "API_KEYS_KV" --preview` and paste ID here
 
 # Scheduled product sync every 4 hours
 [triggers]
