@@ -17,6 +17,7 @@ interface Env {
   GLOWROAD_API_SECRET: string;
   ROPOSO_CLOUT_API_KEY: string;
   CJ_DROPSHIPPING_API_KEY: string;
+  PRINTROVE_TOKEN: string;
   JWT_SECRET: string;
   ALLOWED_ORIGINS: string;
 }

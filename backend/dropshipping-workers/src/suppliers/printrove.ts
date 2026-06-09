@@ -38,12 +38,12 @@ export async function fetchPrintroveProducts(
   }
 
   try {
-    const apiKey = await env.API_KEYS_KV.get('printrove:api_key');
+    const apiKey = env.PRINTROVE_TOKEN;
     if (!apiKey) {
       throw new Error('Printrove API key not configured');
     }
 
-    const url = new URL('https://api.printrove.com/api/external/v1/products');
+    const url = new URL('https://api.printrove.com/api/external/products');
 
     if (options.category) url.searchParams.append('category', options.category);
     if (options.search) url.searchParams.append('search', options.search);
@@ -102,7 +102,7 @@ export async function syncPrintroveCatalog(env: any): Promise<{
   error?: string;
 }> {
   try {
-    const apiKey = await env.API_KEYS_KV.get('printrove:api_key');
+    const apiKey = env.PRINTROVE_TOKEN;
     if (!apiKey) {
       return {
         success: false,
@@ -111,7 +111,7 @@ export async function syncPrintroveCatalog(env: any): Promise<{
       };
     }
 
-    const response = await fetch('https://api.printrove.com/api/external/v1/products', {
+    const response = await fetch('https://api.printrove.com/api/external/products', {
       method: 'GET',
       headers: {
         'Authorization': `Bearer ${apiKey}`,

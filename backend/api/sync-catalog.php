@@ -72,7 +72,7 @@ try {
 }
 
 function fetchPrintroveCatalog(array $credentials): array {
-    $payload = curlGet('https://api.printrove.com/api/external/v1/products', [
+    $payload = curlGet('https://api.printrove.com/api/external/products', [
         'Authorization: Bearer ' . trim($credentials['api_key']),
         'Accept: application/json',
     ]);
