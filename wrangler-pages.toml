@@ -1,0 +1,37 @@
+name = "bhavik-ecommerce"
+type = "javascript"
+
+[build]
+command = "npm run build"
+cwd = "."
+
+[build.upload]
+globs = ["dist/**/*.html", "dist/**/*.css", "dist/**/*.js", "dist/**/*.json", "dist/**/*.svg", "dist/**/*.png", "dist/**/*.jpg", "dist/**/*.gif", "dist/**/*.webp", "dist/**/*.woff", "dist/**/*.woff2"]
+
+[[routes]]
+pattern = "yourdomain.com/*"
+zone_name = "yourdomain.com"
+
+# Route API calls to Cloudflare Workers
+[[routes]]
+pattern = "api.yourdomain.com/*"
+custom_domain = true
+zone_name = "yourdomain.com"
+
+[env.development]
+routes = [{ pattern = "dev.yourdomain.com/*", zone_name = "yourdomain.com" }]
+
+[env.production]
+routes = [{ pattern = "yourdomain.com/*", zone_name = "yourdomain.com" }]
+
+# Security headers
+[site]
+# Add this section to set security headers
+include_files = ["dist/**"]
+
+[[routes]]
+pattern = "*"
+custom_domain = true
+
+[triggers.crons]
+cron = ["0 0 * * *"]

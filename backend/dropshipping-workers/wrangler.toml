@@ -1,0 +1,42 @@
+name = "bhavik-dropshipping-api"
+type = "javascript"
+account_id = "" # TODO: Replace with your Cloudflare account ID (run: wrangler whoami)
+workers_dev = true
+route = "api.yourdomain.com/*" # TODO: Replace with your actual domain
+zone_id = "" # TODO: Replace with your zone ID from Cloudflare dashboard
+
+[build]
+command = "npm install && npm run build"
+cwd = "./"
+
+[env.production]
+routes = [{ pattern = "api.yourdomain.com/*", zone_id = "" }] # TODO: Update with your domain
+
+# D1 Database for order tracking and analytics
+[[d1_databases]]
+binding = "DB"
+database_name = "bhavik-dropshipping"
+database_id = "" # TODO: Create via: wrangler d1 create bhavik-dropshipping
+
+# KV Namespace for product caching (4-hour TTL)
+[[kv_namespaces]]
+binding = "SUPPLIER_CACHE"
+id = "" # TODO: Create via: wrangler kv:namespace create "SUPPLIER_CACHE"
+
+# KV Namespace for API keys storage (optional, can use secrets instead)
+[[kv_namespaces]]
+binding = "API_KEYS_KV"
+id = "" # TODO: Create via: wrangler kv:namespace create "API_KEYS_KV"
+
+# Production KV namespaces
+[env.production.kv_namespaces]
+binding = "SUPPLIER_CACHE"
+id = "" # TODO: Create via: wrangler kv:namespace create "SUPPLIER_CACHE" --preview
+
+[env.production.kv_namespaces]
+binding = "API_KEYS_KV"
+id = "" # TODO: Create via: wrangler kv:namespace create "API_KEYS_KV" --preview
+
+# Scheduled product sync every 4 hours
+[triggers]
+crons = ["0 */4 * * *"]

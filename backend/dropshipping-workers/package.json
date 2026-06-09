@@ -1,0 +1,19 @@
+{
+  "name": "bhavik-dropshipping-workers",
+  "version": "1.0.0",
+  "description": "Cloudflare Workers for secure dropshipping API integration",
+  "main": "src/index.ts",
+  "scripts": {
+    "dev": "wrangler dev",
+    "deploy": "wrangler deploy",
+    "build": "esbuild src/index.ts --bundle --minify --platform=node --target=es2020 --outfile=dist/index.js"
+  },
+  "dependencies": {
+    "itty-router": "^4.0.0"
+  },
+  "devDependencies": {
+    "@cloudflare/workers-types": "^4.20240608.0",
+    "esbuild": "^0.21.0",
+    "wrangler": "^3.45.0"
+  }
+}
