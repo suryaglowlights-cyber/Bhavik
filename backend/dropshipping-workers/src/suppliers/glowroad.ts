@@ -193,3 +193,106 @@ function mapPaymentMethod(method: string): string {
   };
   return mapping[method] || 'cod';
 }
+
+/**
+ * Sync catalog from GlowRoad
+ */
+export async function syncGlowroadCatalog(env: any): Promise<{
+  success: boolean;
+  stats: { total: number; saved: number };
+  error?: string;
+}> {
+  try {
+    const apiKey = await env.API_KEYS_KV.get('glowroad:api_key');
+    const secretKey = await env.API_KEYS_KV.get('glowroad:secret_key');
+    if (!apiKey || !secretKey) {
+      return {
+        success: false,
+        stats: { total: 0, saved: 0 },
+        error: 'GlowRoad API key or secret not configured',
+      };
+    }
+
+    const response = await fetch('https://api.glowroad.com/v2/products', {
+      method: 'GET',
+      headers: {
+        'Authorization': `Bearer ${apiKey}`,
+        'X-Client-Id': secretKey,
+        'Accept': 'application/json',
+      },
+    });
+
+    if (!response.ok) {
+      throw new Error(`GlowRoad API error: ${response.statusText}`);
+    }
+
+    const data = await response.json();
+    const items = extractProductBlocks(data);
+
+    let saved = 0;
+    for (const item of items) {
+      const productId = item.id || item.product_id || item.sku;
+      if (!productId) continue;
+
+      const title = item.name || item.title || item.product_name || 'Untitled Product';
+      const description = item.description || item.short_description || '';
+      const retailPrice = parseFloat(item.price || item.mrp || item.selling_price || 0);
+      const wholesaleCost = parseFloat(item.wholesale_price || item.cost_price || item.price || 0);
+      const images = JSON.stringify(item.images || (item.image ? [item.image] : []));
+      const status = item.status || item.availability || 'active';
+
+      await env.DB.prepare(`
+        INSERT INTO products (provider_name, provider_product_id, title, description, retail_price, wholesale_cost, images, status, created_at, updated_at)
+        VALUES (?, ?, ?, ?, ?, ?, ?, ?, datetime('now'), datetime('now'))
+        ON CONFLICT(provider_name, provider_product_id)
+        DO UPDATE SET
+          title = excluded.title,
+          description = excluded.description,
+          retail_price = excluded.retail_price,
+          wholesale_cost = excluded.wholesale_cost,
+          images = excluded.images,
+          status = excluded.status,
+          updated_at = datetime('now')
+      `).bind(
+        'GlowRoad',
+        productId,
+        title,
+        description,
+        retailPrice,
+        wholesaleCost,
+        images,
+        status
+      ).run();
+
+      saved++;
+    }
+
+    return {
+      success: true,
+      stats: { total: items.length, saved },
+    };
+  } catch (error: any) {
+    console.error('GlowRoad catalog sync error:', error);
+    return {
+      success: false,
+      stats: { total: 0, saved: 0 },
+      error: error.message,
+    };
+  }
+}
+
+function extractProductBlocks(payload: any): any[] {
+  if (payload.data && Array.isArray(payload.data)) {
+    return payload.data;
+  }
+  if (payload.products && Array.isArray(payload.products)) {
+    return payload.products;
+  }
+  if (payload.items && Array.isArray(payload.items)) {
+    return payload.items;
+  }
+  if (Array.isArray(payload)) {
+    return payload;
+  }
+  return [payload];
+}

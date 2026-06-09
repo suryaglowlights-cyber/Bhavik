@@ -191,3 +191,104 @@ function mapPaymentMethod(method: string): string {
   };
   return mapping[method] || 'cod';
 }
+
+/**
+ * Sync catalog from Roposo
+ */
+export async function syncRoposoCatalog(env: any): Promise<{
+  success: boolean;
+  stats: { total: number; saved: number };
+  error?: string;
+}> {
+  try {
+    const apiKey = await env.API_KEYS_KV.get('roposo:api_key');
+    if (!apiKey) {
+      return {
+        success: false,
+        stats: { total: 0, saved: 0 },
+        error: 'Roposo API key not configured',
+      };
+    }
+
+    const response = await fetch('https://api.roposo.com/v2/products', {
+      method: 'GET',
+      headers: {
+        'Authorization': `Bearer ${apiKey}`,
+        'Accept': 'application/json',
+      },
+    });
+
+    if (!response.ok) {
+      throw new Error(`Roposo API error: ${response.statusText}`);
+    }
+
+    const data = await response.json();
+    const items = extractProductBlocks(data);
+
+    let saved = 0;
+    for (const item of items) {
+      const productId = item.id || item.product_id || item.sku;
+      if (!productId) continue;
+
+      const title = item.name || item.title || 'Untitled Product';
+      const description = item.description || '';
+      const retailPrice = parseFloat(item.price || item.mrp || 0);
+      const wholesaleCost = parseFloat(item.wholesale_price || item.cost_price || 0);
+      const images = JSON.stringify(item.images || (item.image ? [item.image] : []));
+      const status = item.status || item.availability || 'active';
+
+      await env.DB.prepare(`
+        INSERT INTO products (provider_name, provider_product_id, title, description, retail_price, wholesale_cost, images, status, created_at, updated_at)
+        VALUES (?, ?, ?, ?, ?, ?, ?, ?, datetime('now'), datetime('now'))
+        ON CONFLICT(provider_name, provider_product_id)
+        DO UPDATE SET
+          title = excluded.title,
+          description = excluded.description,
+          retail_price = excluded.retail_price,
+          wholesale_cost = excluded.wholesale_cost,
+          images = excluded.images,
+          status = excluded.status,
+          updated_at = datetime('now')
+      `).bind(
+        'Roposo',
+        productId,
+        title,
+        description,
+        retailPrice,
+        wholesaleCost,
+        images,
+        status
+      ).run();
+
+      saved++;
+    }
+
+    return {
+      success: true,
+      stats: { total: items.length, saved },
+    };
+  } catch (error: any) {
+    console.error('Roposo catalog sync error:', error);
+    return {
+      success: false,
+      stats: { total: 0, saved: 0 },
+      error: error.message,
+    };
+  }
+}
+
+function extractProductBlocks(payload: any): any[] {
+  if (payload.data && Array.isArray(payload.data)) {
+    return payload.data;
+  }
+  if (payload.products && Array.isArray(payload.products)) {
+    return payload.products;
+  }
+  if (payload.items && Array.isArray(payload.items)) {
+    return payload.items;
+  }
+  if (Array.isArray(payload)) {
+    return payload;
+  }
+  return [payload];
+}

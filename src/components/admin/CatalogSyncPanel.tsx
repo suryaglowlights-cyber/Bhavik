@@ -7,6 +7,8 @@ const PROVIDERS = [
   { key: "Qikink", label: "Sync Qikink Catalog", colour: "from-fuchsia-500 to-pink-600" },
   { key: "Blinkstore", label: "Sync Blinkstore Catalog", colour: "from-cyan-500 to-blue-600" },
   { key: "VendorGo", label: "Sync VendorGo Catalog", colour: "from-emerald-500 to-teal-600" },
+  { key: "GlowRoad", label: "Sync GlowRoad Catalog", colour: "from-orange-500 to-red-600" },
+  { key: "Roposo", label: "Sync Roposo Catalog", colour: "from-yellow-500 to-amber-600" },
 ] as const;
 
 type ProviderKey = (typeof PROVIDERS)[number]["key"];

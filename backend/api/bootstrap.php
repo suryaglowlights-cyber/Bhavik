@@ -35,6 +35,8 @@ function getAllProviderKeys(): array {
         'qikink' => [],
         'blinkstore' => [],
         'vendorgo' => [],
+        'glowroad' => [],
+        'roposo' => [],
     ];
 
     foreach ($rows as $row) {

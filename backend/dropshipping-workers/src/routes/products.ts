@@ -3,6 +3,8 @@ import { fetchGlowroadProducts } from '../suppliers/glowroad';
 import { fetchRopososProducts } from '../suppliers/roposo';
 import { fetchCJProducts } from '../suppliers/cj-dropshipping';
 import { fetchPrintroveProducts, syncPrintroveCatalog } from '../suppliers/printrove';
+import { syncGlowroadCatalog } from '../suppliers/glowroad';
+import { syncRoposoCatalog } from '../suppliers/roposo';
 
 export const productRoutes = Router();
 
@@ -90,7 +92,7 @@ productRoutes.post('/sync-catalog', async (request: Request) => {
   const env = (request as any).env;
   const corsHeaders = (request as any).corsHeaders || {};
 
-  const allowedProviders = ['Printrove', 'Qikink', 'Blinkstore', 'VendorGo'];
+  const allowedProviders = ['Printrove', 'Qikink', 'Blinkstore', 'VendorGo', 'GlowRoad', 'Roposo'];
   if (!provider || !allowedProviders.includes(provider)) {
     return new Response(
       JSON.stringify({ success: false, error: 'Invalid provider specified.' }),
@@ -107,6 +109,12 @@ productRoutes.post('/sync-catalog', async (request: Request) => {
     switch (provider) {
       case 'Printrove':
         result = await syncPrintroveCatalog(env);
+        break;
+      case 'GlowRoad':
+        result = await syncGlowroadCatalog(env);
+        break;
+      case 'Roposo':
+        result = await syncRoposoCatalog(env);
         break;
       case 'Qikink':
       case 'Blinkstore':
