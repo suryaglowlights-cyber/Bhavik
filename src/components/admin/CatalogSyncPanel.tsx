@@ -49,7 +49,7 @@ export default function CatalogSyncPanel() {
     setError(null);
 
     try {
-      const res = await fetch(`/api/sync-catalog.php?provider=${encodeURIComponent(provider)}`, {
+      const res = await fetch(`/api/products/sync-catalog?provider=${encodeURIComponent(provider)}`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
       });

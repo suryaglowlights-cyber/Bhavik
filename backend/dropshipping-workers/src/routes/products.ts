@@ -2,6 +2,7 @@ import { Router } from 'itty-router';
 import { fetchGlowroadProducts } from '../suppliers/glowroad';
 import { fetchRopososProducts } from '../suppliers/roposo';
 import { fetchCJProducts } from '../suppliers/cj-dropshipping';
+import { fetchPrintroveProducts, syncPrintroveCatalog } from '../suppliers/printrove';
 
 export const productRoutes = Router();
 
@@ -71,6 +72,79 @@ productRoutes.get('/search', async (request: Request) => {
     console.error('Product search error:', error);
     return new Response(
       JSON.stringify({ error: error.message || 'Failed to fetch products' }),
+      {
+        status: 500,
+        headers: { 'Content-Type': 'application/json', ...corsHeaders },
+      }
+    );
+  }
+});
+
+/**
+ * POST /api/products/sync-catalog?provider=Printrove
+ * Sync catalog from a provider
+ */
+productRoutes.post('/sync-catalog', async (request: Request) => {
+  const url = new URL(request.url);
+  const provider = url.searchParams.get('provider');
+  const env = (request as any).env;
+  const corsHeaders = (request as any).corsHeaders || {};
+
+  const allowedProviders = ['Printrove', 'Qikink', 'Blinkstore', 'VendorGo'];
+  if (!provider || !allowedProviders.includes(provider)) {
+    return new Response(
+      JSON.stringify({ success: false, error: 'Invalid provider specified.' }),
+      {
+        status: 400,
+        headers: { 'Content-Type': 'application/json', ...corsHeaders },
+      }
+    );
+  }
+
+  try {
+    let result;
+
+    switch (provider) {
+      case 'Printrove':
+        result = await syncPrintroveCatalog(env);
+        break;
+      case 'Qikink':
+      case 'Blinkstore':
+      case 'VendorGo':
+        result = {
+          success: false,
+          stats: { total: 0, saved: 0 },
+          error: `${provider} catalog sync not yet implemented in Cloudflare Worker.`,
+        };
+        break;
+      default:
+        result = {
+          success: false,
+          stats: { total: 0, saved: 0 },
+          error: 'Unknown provider.',
+        };
+    }
+
+    if (!result.success) {
+      return new Response(
+        JSON.stringify({ success: false, error: result.error }),
+        {
+          status: 500,
+          headers: { 'Content-Type': 'application/json', ...corsHeaders },
+        }
+      );
+    }
+
+    return new Response(
+      JSON.stringify({ success: true, provider, stats: result.stats }),
+      {
+        headers: { 'Content-Type': 'application/json', ...corsHeaders },
+      }
+    );
+  } catch (error: any) {
+    console.error('Catalog sync error:', error);
+    return new Response(
+      JSON.stringify({ success: false, error: error.message || 'Catalog sync failed' }),
       {
         status: 500,
         headers: { 'Content-Type': 'application/json', ...corsHeaders },
