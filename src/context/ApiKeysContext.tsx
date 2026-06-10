@@ -58,7 +58,7 @@ export function ApiKeysProvider({ children }: { children: ReactNode }) {
   useEffect(() => {
     const loadBackendKeys = async () => {
       try {
-        const res = await fetch("/api/provider-keys");
+        const res = await fetch("/api/keys");
         if (res.ok) {
           const json = await res.json();
           if (json && typeof json === "object") {
@@ -83,7 +83,7 @@ export function ApiKeysProvider({ children }: { children: ReactNode }) {
     setKeys(updatedKeys);
     
     try {
-      await fetch("/api/provider-keys", {
+      await fetch("/api/keys", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify(updatedKeys),

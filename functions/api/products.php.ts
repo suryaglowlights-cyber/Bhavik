@@ -12,12 +12,12 @@ export async function onRequestGet(context: { env: any }) {
 
     for (const provider of providers) {
       const indexKey = `product:index:${provider}`;
-      const indexData = await env.CACHE?.get(indexKey, 'json');
+      const indexData = await env.BHAVIK_STORE?.get(indexKey, 'json');
 
       if (indexData && Array.isArray(indexData)) {
         for (const productId of indexData) {
           const productKey = `product:${provider}:${productId}`;
-          const productData = await env.CACHE?.get(productKey, 'json');
+          const productData = await env.BHAVIK_STORE?.get(productKey, 'json');
 
           if (productData) {
             products.push(productData);

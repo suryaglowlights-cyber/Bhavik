@@ -8,10 +8,10 @@ cwd = "."
 [build.upload]
 globs = ["dist/**/*.html", "dist/**/*.css", "dist/**/*.js", "dist/**/*.json", "dist/**/*.svg", "dist/**/*.png", "dist/**/*.jpg", "dist/**/*.gif", "dist/**/*.webp", "dist/**/*.woff", "dist/**/*.woff2"]
 
-# KV Namespace for product caching
+# KV Namespace for persistent storage (API keys, products, settings)
 [[kv_namespaces]]
-binding = "CACHE"
-id = "6c4488ed875942589dcac121327c8733" # TODO: Create via: wrangler kv:namespace create "PRODUCT_CACHE" --preview
+binding = "BHAVIK_STORE"
+id = "6c4488ed875942589dcac121327c8733"
 
 [[routes]]
 pattern = "yourdomain.com/*"

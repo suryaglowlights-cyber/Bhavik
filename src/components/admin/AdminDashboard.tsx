@@ -1,9 +1,10 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { useAuth } from "../../context/AuthContext";
 import { useApiKeys } from "../../context/ApiKeysContext";
 import ApiKeysPanel from "./ApiKeysPanel";
 import ContentEditor from "./ContentEditor";
 import CatalogSyncPanel from "./CatalogSyncPanel";
+import InventoryPanel from "./InventoryPanel";
 
 interface Props {
   onBack: () => void;
@@ -12,7 +13,15 @@ interface Props {
 export default function AdminDashboard({ onBack }: Props) {
   const { adminName, logout } = useAuth();
   const { getActiveCount } = useApiKeys();
-  const [activeSection, setActiveSection] = useState<"apikeys" | "content" | "orders" | "settings" | "catalog">("apikeys");
+  const [activeSection, setActiveSection] = useState<"apikeys" | "content" | "orders" | "settings" | "catalog" | "inventory">("apikeys");
+  const [kvConnected, setKvConnected] = useState(false);
+
+  useEffect(() => {
+    // Check if KV is connected by testing the API
+    fetch("/api/keys")
+      .then((res) => setKvConnected(res.ok))
+      .catch(() => setKvConnected(false));
+  }, []);
 
   const handleLogout = () => {
     logout();
@@ -42,6 +51,12 @@ export default function AdminDashboard({ onBack }: Props) {
           </div>
 
           <div className="flex items-center gap-3">
+            {kvConnected && (
+              <div className="hidden sm:flex items-center gap-2 px-3 py-1.5 rounded-xl bg-emerald-500/10 border border-emerald-500/30">
+                <div className="w-2 h-2 rounded-full bg-emerald-500 animate-pulse" />
+                <span className="text-xs text-emerald-300 font-semibold">🟢 Cloud Storage Connected</span>
+              </div>
+            )}
             <div className="hidden sm:flex items-center gap-2 px-3 py-1.5 rounded-xl bg-white/5 border border-white/10">
               <div className="w-7 h-7 rounded-lg bg-gradient-to-br from-violet-500 to-fuchsia-500 flex items-center justify-center text-xs font-bold">
                 {adminName.charAt(0)}
@@ -91,6 +106,7 @@ export default function AdminDashboard({ onBack }: Props) {
           {[
             { id: "apikeys" as const, label: "🔑 API Keys", desc: "Provider configurations" },
             { id: "catalog" as const, label: "🛒 Catalog Sync", desc: "Sync vendor products" },
+            { id: "inventory" as const, label: "📦 Inventory", desc: "Manage products" },
             { id: "content" as const, label: "📝 Content Editor", desc: "Edit website content" },
             { id: "orders" as const, label: "📦 Orders", desc: "Coming soon" },
             { id: "settings" as const, label: "⚙️ Settings", desc: "Store settings" },
@@ -113,6 +129,8 @@ export default function AdminDashboard({ onBack }: Props) {
         {activeSection === "apikeys" && <ApiKeysPanel />}
 
         {activeSection === "catalog" && <CatalogSyncPanel />}
+
+        {activeSection === "inventory" && <InventoryPanel />}
 
         {activeSection === "content" && <ContentEditor />}
 
